@@ -18,11 +18,22 @@ jobs:
       - name: Unzip Project
         run: |
           unzip my-app.zip -d extracted_project
-          # সঠিক প্রজেক্ট ডিরেক্টরি স্বয়ংক্রিয়ভাবে খুঁজে বের করা
-          GRADLEW_PATH=$(find extracted_project -name "gradlew" | head -n 1)
-          PROJECT_DIR=$(dirname "$GRADLEW_PATH")
+          # প্রজেক্টের আসল ডিরেক্টরি খুঁজে বের করা
+          BUILD_GRADLE_PATH=$(find extracted_project -name "build.gradle*" | head -n 1)
+          PROJECT_DIR=$(dirname "$BUILD_GRADLE_PATH")
+          
+          # যদি app ফোল্ডারের ভেতরের build.gradle খুঁজে পায়, তবে এক ধাপ পেছনে মেইন প্রজেক্টে যাওয়া
+          if [[ "$PROJECT_DIR" == */app ]]; then
+            PROJECT_DIR=$(dirname "$PROJECT_DIR")
+          fi
+          
           echo "PROJECT_DIR=$PROJECT_DIR" >> $GITHUB_ENV
           cd "$PROJECT_DIR"
+          
+          # যদি gradlew ফাইল না থাকে, তবে গিটহাব নিজেই নতুন করে তৈরি করে নেবে
+          if [ ! -f "gradlew" ]; then
+            gradle wrapper
+          fi
           chmod +x gradlew
 
       - name: Build APK
