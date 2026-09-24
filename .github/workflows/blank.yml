@@ -18,9 +18,8 @@ jobs:
       - name: Unzip Project
         run: |
           unzip my-app.zip -d extracted_project
-          # প্রজেক্টের মেইন ডিরেক্টরিতে যাওয়া
+          # টার্মাক্স স্ক্রিনশটে দেখা ফোল্ডারের নাম অনুযায়ী ভেতরে যাওয়া
           cd extracted_project/my-app-project
-          # গ্রেডেল ফাইল রান করার পারমিশন দেওয়া
           chmod +x gradlew
 
       - name: Build APK
