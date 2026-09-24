@@ -18,17 +18,16 @@ jobs:
       - name: Unzip Project
         run: |
           unzip my-app.zip -d extracted_project
-          # টার্মাক্স স্ক্রিনশটে দেখা ফোল্ডারের নাম অনুযায়ী ভেতরে যাওয়া
-          cd extracted_project/my-app-project
+          cd extracted_project
           chmod +x gradlew
 
       - name: Build APK
         run: |
-          cd extracted_project/my-app-project
+          cd extracted_project
           ./gradlew assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: my-app-debug-apk
-          path: extracted_project/my-app-project/app/build/outputs/apk/debug/*.apk
+          path: extracted_project/app/build/outputs/apk/debug/*.apk
