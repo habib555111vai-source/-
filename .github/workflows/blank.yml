@@ -1,0 +1,35 @@
+name: Build Android APK From ZIP
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Unzip Project
+        run: |
+          unzip my-app.zip -d extracted_project
+          # প্রজেক্টের মেইন ডিরেক্টরিতে যাওয়া
+          cd extracted_project/my-app-project
+          # গ্রেডেল ফাইল রান করার পারমিশন দেওয়া
+          chmod +x gradlew
+
+      - name: Build APK
+        run: |
+          cd extracted_project/my-app-project
+          ./gradlew assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: my-app-debug-apk
+          path: extracted_project/my-app-project/app/build/outputs/apk/debug/*.apk
