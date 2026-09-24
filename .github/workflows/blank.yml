@@ -18,16 +18,21 @@ jobs:
       - name: Unzip Project
         run: |
           unzip my-app.zip -d extracted_project
-          cd extracted_project
+          # সঠিক প্রজেক্ট ডিরেক্টরি স্বয়ংক্রিয়ভাবে খুঁজে বের করা
+          GRADLEW_PATH=$(find extracted_project -name "gradlew" | head -n 1)
+          PROJECT_DIR=$(dirname "$GRADLEW_PATH")
+          echo "PROJECT_DIR=$PROJECT_DIR" >> $GITHUB_ENV
+          cd "$PROJECT_DIR"
           chmod +x gradlew
 
       - name: Build APK
         run: |
-          cd extracted_project
+          cd ${{ env.PROJECT_DIR }}
           ./gradlew assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: my-app-debug-apk
-          path: extracted_project/app/build/outputs/apk/debug/*.apk
+          path: |
+            **/build/outputs/apk/debug/*.apk
